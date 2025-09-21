@@ -1,5 +1,8 @@
 const express = require("express");
+const cors = require("cors"); // Add this line
 const api = express.Router();
+
+api.use(cors()); // Enable CORS for all routes
 api.use(express.json());
 
 const client = require("../integrations/mongo-db/mongo-connect");
@@ -13,12 +16,10 @@ api.post("/log", async (req, res) => {
   const providedAppName = req.headers["x-app-name"];
 
   if (providedKey !== secretKey || providedAppName !== process.env.APP_NAME) {
-    return res
-      .status(403)
-      .json({
-        status: "error",
-        message: "Forbidden: Invalid secret app name and key",
-      });
+    return res.status(403).json({
+      status: "error",
+      message: "Forbidden: Invalid secret app name and key",
+    });
   }
   try {
     await client.connect(); // Ensure connection
